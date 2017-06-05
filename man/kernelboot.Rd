@@ -68,12 +68,12 @@ from kernel density estimate of the distribution.
 For smoothed bootstrap, points (in univariate case), or rows (in multivariate case), are drawn with
 replacement, to obtain samples of size \eqn{n} from the initial dataset of size \eqn{n}, as with
 standard bootstrap. Next, random noise from kernel density \eqn{K} is added to each of the drawn
-values. The proceure is repeated \eqn{R} times and \code{statistic} is evaluated on each of the
+values. The procedure is repeated \eqn{R} times and \code{statistic} is evaluated on each of the
 samples.
 
 The noise is added \emph{only} to the numeric columns, while non-numeric columns (e.g.
 \code{character}, \code{factor}, \code{logical}) are not altered. What follows, to the
-non-numeric columns and columns listed in \code{ignore} parmeter standard bootstrap procedure
+non-numeric columns and columns listed in \code{ignore} parameter standard bootstrap procedure
 is applied.
 
 
@@ -137,7 +137,7 @@ This package offers the following univariate kernels:
 All the kernels are re-scalled so that their standard deviations are equal to 1,
 so that bandwidth parameter controls their standard deviations.
 
-Random generation from Epachenikov kernel is done using algorithm
+Random generation from Epanchenikov kernel is done using algorithm
 described by Devoye (1986). For optcosine kernel inverse transform
 sampling is used. For biweight kernel random values are drawn from
 \eqn{\mathrm{Beta}(3, 3)}{Beta(3, 3)} distribution and
