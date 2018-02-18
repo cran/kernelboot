@@ -1,10 +1,10 @@
-0fd86197682953719fe245509336be1f *DESCRIPTION
-2bb7e31f30b39c62bb626c236b77e3c8 *NAMESPACE
+681662010e680a3f1bad8e935b57e53f *DESCRIPTION
+7f848e07e878fc4c7cd1e3c01985afd3 *NAMESPACE
 4d87056b0044fd97f8c341518b96302e *R/RcppExports.R
 575136ad6477ee23ce7d739c6c08def3 *R/bandwidth.R
 dc8976c89139838b3ce532db66599423 *R/kernelboot-methods.R
 c11473e838b61e8abe172a1a69d734ac *R/kernelboot-package.R
-da97f532022d6112c58aa41ecad9215a *R/kernelboot.R
+ed044a00c8ab692914da918bdd3e7f9c *R/kernelboot.R
 745a7eeb3a44a0b32a580d66e70923fc *R/multivar-gaussian-kd.R
 90018febb2919d6bef232b5c96cde59f *R/multivar-kd.R
 3b079683b1b2ad57ffd411ec1005867e *R/onUnload.R
@@ -23,7 +23,7 @@ bdda344fd94a8259663cecb92849710b *man/rmvk.Rd
 aff4b60b5c5a58202dd3519de3908d94 *src/multivar-kd.cpp
 bd1629445beab48e57beb65528893bd7 *src/shared.h
 a332b291548417259d31993f2ca97167 *src/univar-kd.cpp
-e57cf6588b382868dc949a14f755dc41 *tests/test_parallel.R
+ad3717be3459fa580a8f325dcd9e2690 *tests/test_parallel.R
 19d6651755d13d53bee9281d0a20853c *tests/testthat.R
 898609ce9a71cd6aed4b8f4b88ae4c80 *tests/testthat/test_bandwidth.R
 8b87e712b6518a7291635835a6baa05d *tests/testthat/test_kernelboot.R
