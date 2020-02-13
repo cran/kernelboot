@@ -36,8 +36,6 @@
 #'                   \emph{Warning:} using parallel computing does not necessary have to
 #'                   lead to improved performance.
 #' @param workers    the number of workers used for parallel computing (see \code{\link[future]{multiprocess}}).
-#'                   By default this is automatically determined using the \code{\link[future]{availableCores}}
-#'                   function.
 #'
 #'
 #' @details
@@ -280,7 +278,7 @@
 #'
 #'
 #' @importFrom stats rnorm bw.SJ bw.bcv bw.nrd bw.nrd0 bw.ucv
-#' @importFrom future plan multiprocess availableCores
+#' @importFrom future plan multiprocess
 #' @importFrom future.apply future_lapply
 #'
 #' @export
@@ -291,7 +289,7 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
                                   "cosine", "optcosine", "none"),
                        weights = NULL, adjust = 1,
                        shrinked = TRUE, ignore = NULL,
-                       parallel = FALSE, workers = availableCores()) {
+                       parallel = FALSE, workers = 1L) {
 
   call <- match.call()
   kernel <- match.arg(kernel)
@@ -303,30 +301,28 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
   if (!(is.simple.vector(data) || is.data.frame(data) || is.matrix(data)))
     stop("unsupported data type")
 
+  if (is.data.frame(data) || is.matrix(data)) {
+    num_cols <- numericColumns(data)
+    ignr_cols <- colnames(data) %in% ignore
+    incl_cols <- num_cols & !ignr_cols
+  }
+
   if (is.character(bw)) {
-    bw <- tolower(bw)
-    if (bw == "default") {
-      if (is.simple.vector(data)) {
-        bw <- bw.nrd0(data)
-      } else {
-        bw <- bw.silv(data)
-        if (kernel != "multivariate")
-          bw <- sqrt(diag(bw))
-      }
+    method <- bw
+    if (is.data.frame(data) || is.matrix(data)) {
+      bw <- matrix(0, m, m)
+      if (!is.null(colnames(data)))
+        rownames(bw) <- colnames(bw) <- colnames(data)
+      bw[incl_cols, incl_cols] <- calculate_bandwidth(data[, incl_cols], method, kernel == 'multivariate')
     } else {
-      bw <- switch(bw, nrd0 = bw.nrd0(data), nrd = bw.nrd(data),
-                   ucv = bw.ucv(data), bcv = bw.bcv(data), sj = ,
-                   `sj-ste` = bw.SJ(data, method = "ste"),
-                   `sj-dpi` = bw.SJ(data, method = "dpi"),
-                   silv = bw.silv(data), scott = bw.scott(data),
-                   stop("unknown bandwidth rule"))
+      bw <- calculate_bandwidth(data, method, FALSE)
     }
   }
 
-  if (!is.simple.vector(adjust))
+  if (!is.simple.vector(adjust) || length(adjust) > 1L)
     stop("adjust is not a scalar")
 
-  bw <- bw * adjust[1L]
+  bw <- bw * adjust
 
   # check for non-numeric, NAs, NaNs, infinite values
   if (!all(is.finite(bw)))
@@ -369,12 +365,6 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
   }
 
   if (is.data.frame(data) || is.matrix(data)) {
-
-    # data is data.frame or matrix
-
-    num_cols <- numericColumns(data)             # find numeric columns
-    ignr_cols <- colnames(data) %in% ignore
-    incl_cols <- num_cols & !ignr_cols
 
     if (!is.null(colnames(data))) {
       vars <- list(
@@ -561,3 +551,24 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
 
 }
 
+
+calculate_bandwidth <- function(data, method, multivariate) {
+  method <- tolower(method)
+  if (method == "default") {
+    if (is.simple.vector(data)) {
+      bw <- bw.nrd0(data)
+    } else {
+      bw <- bw.silv(data)
+      if (!multivariate)
+        bw <- sqrt(diag(bw))
+    }
+  } else {
+    bw <- switch(method, nrd0 = bw.nrd0(data), nrd = bw.nrd(data),
+                 ucv = bw.ucv(data), bcv = bw.bcv(data), sj = ,
+                 `sj-ste` = bw.SJ(data, method = "ste"),
+                 `sj-dpi` = bw.SJ(data, method = "dpi"),
+                 silv = bw.silv(data), scott = bw.scott(data),
+                 stop("unknown bandwidth rule"))
+  }
+  return(bw)
+}

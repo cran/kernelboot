@@ -170,14 +170,12 @@ test_that("kernelboot function", {
   expect_silent(kernelboot(dat$mpg, bw = 1, fun3, adjust = a, R = 10, kernel = "gaussian"))
 
 
-
   a <- -1
 
   expect_error(kernelboot(dat, fun1, bw = diag(k), adjust = a, R = 10))
   expect_error(kernelboot(dat, fun1, bw = rep(1, k), adjust = a, R = 10))
   expect_error(kernelboot(dat$mpg, bw = 1, fun2, adjust = a, R = 10, kernel = "gaussian"))
   expect_error(kernelboot(dat$mpg, bw = 1, fun3, adjust = a, R = 10, kernel = "gaussian"))
-
 
 
   a <- NA
@@ -188,38 +186,12 @@ test_that("kernelboot function", {
   expect_error(kernelboot(dat$mpg, bw = 1, fun3, adjust = a, R = 10, kernel = "gaussian"))
 
 
-
   a <- Inf
 
   expect_error(kernelboot(dat, fun1, bw = diag(k), adjust = a, R = 10))
   expect_error(kernelboot(dat, fun1, bw = rep(1, k), adjust = a, R = 10))
   expect_error(kernelboot(dat$mpg, bw = 1, fun2, adjust = a, R = 10, kernel = "gaussian"))
   expect_error(kernelboot(dat$mpg, bw = 1, fun3, adjust = a, R = 10, kernel = "gaussian"))
-
-
-  a <- 1:10
-
-  expect_silent(kernelboot(dat, fun1, bw = diag(k), adjust = a, R = 10))
-  expect_silent(kernelboot(dat, fun1, bw = rep(1, k), adjust = a, R = 10))
-  expect_silent(kernelboot(dat$mpg, bw = 1, fun2, adjust = a, R = 10, kernel = "gaussian"))
-  expect_silent(kernelboot(dat$mpg, bw = 1, fun3, adjust = a, R = 10, kernel = "gaussian"))
-
-
-  a <- matrix(1, 10, 10)
-
-  expect_error(kernelboot(dat, fun1, bw = diag(k), adjust = a, R = 10))
-  expect_error(kernelboot(dat, fun1, bw = rep(1, k), adjust = a, R = 10))
-  expect_error(kernelboot(dat$mpg, bw = 1, fun2, adjust = a, R = 10, kernel = "gaussian"))
-  expect_error(kernelboot(dat$mpg, bw = 1, fun3, adjust = a, R = 10, kernel = "gaussian"))
-
-
-  a <- as.data.frame(matrix(1, 10, 10))
-
-  expect_error(kernelboot(dat, fun1, bw = diag(k), adjust = a, R = 10))
-  expect_error(kernelboot(dat, fun1, bw = rep(1, k), adjust = a, R = 10))
-  expect_error(kernelboot(dat$mpg, bw = 1, fun2, adjust = a, R = 10, kernel = "gaussian"))
-  expect_error(kernelboot(dat$mpg, bw = 1, fun3, adjust = a, R = 10, kernel = "gaussian"))
-
 
   dat <- mtcars
 
@@ -233,6 +205,13 @@ test_that("kernelboot function", {
   # expect_message(kernelboot(dat, fun1, R = 10, ignore = colnames(dat)))
   expect_silent(kernelboot(dat$mpg, fun2, R = 10, ignore = colnames(dat), kernel = "gaussian"))
   expect_silent(kernelboot(dat$mpg, fun3, R = 10, ignore = colnames(dat), kernel = "gaussian"))
+
+  # tests for #7
+  f <- function(dat) coef(lm(Sepal.Width ~ . , data = dat))
+  expect_silent(kernelboot(iris, f, ignore = "Species"))
+
+  f <- function(dat) coef(lm(Sepal.Width ~ . -Species, data = dat))
+  expect_silent(kernelboot(iris, f, ignore = "Species"))
 
 })
 
