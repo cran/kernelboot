@@ -35,7 +35,7 @@
 #' @param parallel   if \code{TRUE}, parallel computing is used (see \code{\link[future.apply]{future_lapply}}).
 #'                   \emph{Warning:} using parallel computing does not necessary have to
 #'                   lead to improved performance.
-#' @param workers    the number of workers used for parallel computing (see \code{\link[future]{multiprocess}}).
+#' @param workers    the number of workers used for parallel computing.
 #'
 #'
 #' @details
@@ -278,7 +278,7 @@
 #'
 #'
 #' @importFrom stats rnorm bw.SJ bw.bcv bw.nrd bw.nrd0 bw.ucv
-#' @importFrom future plan multiprocess
+#' @importFrom future plan multisession multicore
 #' @importFrom future.apply future_lapply
 #'
 #' @export
@@ -353,7 +353,12 @@ kernelboot <- function(data, statistic, R = 500L, bw = "default",
 
     # using future for parallel computing
     repeatFun <- function(n, FUN, workers) {
-      plan(multiprocess, workers = workers)
+      if (parallelly::supportsMulticore()) {
+        oplan <- plan(multicore, workers = workers)
+      } else {
+        oplan <- plan(multisession, workers = workers)
+      }
+      on.exit(plan(oplan))
       future_lapply(1:n, FUN, future.seed = TRUE)
     }
 
